@@ -51,6 +51,8 @@ public class BrowserActivity extends Activity {
 
     private ActivityController mController = NullController.INSTANCE;
 
+    private PowerManager.WakeLock mWakeLock = null;
+
     @Override
     public void onCreate(Bundle icicle) {
         if (LOGV_ENABLED) {
@@ -302,6 +304,21 @@ public class BrowserActivity extends Activity {
     public boolean dispatchGenericMotionEvent(MotionEvent ev) {
         return mController.dispatchGenericMotionEvent(ev) ||
                 super.dispatchGenericMotionEvent(ev);
+    }
+
+    public void acquireWakeLock() {
+        if (mWakeLock == null) {
+            PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+            mWakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "Browser wakelock");
+            mWakeLock.acquire();
+        }
+    }
+
+    public void releaseWakeLock() {
+        if (mWakeLock != null && mWakeLock.isHeld()) {
+            mWakeLock.release();
+            mWakeLock = null;
+        }
     }
 
 }

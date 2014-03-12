@@ -630,6 +630,11 @@ public class Controller
             Log.e(LOGTAG, "BrowserActivity is already paused.");
             return;
         }
+
+        if (mSettings.isNeverSleepEnabled()) {
+            ((BrowserActivity)mActivity).releaseWakeLock();
+        }
+
         mActivityPaused = true;
         Tab tab = mTabControl.getCurrentTab();
         if (tab != null) {
@@ -687,6 +692,10 @@ public class Controller
             Log.e(LOGTAG, "BrowserActivity is already resumed.");
             return;
         }
+        if (mSettings.isNeverSleepEnabled()) {
+            ((BrowserActivity)mActivity).acquireWakeLock();
+        }
+
         mSettings.setLastRunPaused(false);
         mActivityPaused = false;
         Tab current = mTabControl.getCurrentTab();
@@ -1484,12 +1493,14 @@ public class Controller
         boolean isHome = false;
         boolean isDesktopUa = false;
         boolean isLive = false;
+        boolean isNeverSleep = false;
         if (tab != null) {
             canGoBack = tab.canGoBack();
             canGoForward = tab.canGoForward();
             isHome = mSettings.getHomePage().equals(tab.getUrl());
             isDesktopUa = mSettings.hasDesktopUseragent(tab.getWebView());
             isLive = !tab.isSnapshot();
+            isNeverSleep = mSettings.isNeverSleepEnabled();
         }
         final MenuItem back = menu.findItem(R.id.back_menu_id);
         back.setEnabled(canGoBack);
@@ -1525,6 +1536,10 @@ public class Controller
         boolean showDebugSettings = mSettings.isDebugEnabled();
         final MenuItem uaSwitcher = menu.findItem(R.id.ua_desktop_menu_id);
         uaSwitcher.setChecked(isDesktopUa);
+
+        final MenuItem neverSleep = menu.findItem(R.id.never_sleep_menu_id);
+        neverSleep.setChecked(isNeverSleep);
+
         menu.setGroupVisible(R.id.LIVE_MENU, isLive);
         menu.setGroupVisible(R.id.SNAPSHOT_MENU, !isLive);
         menu.setGroupVisible(R.id.COMBO_MENU, false);
@@ -1555,7 +1570,10 @@ public class Controller
                 break;
 
             case R.id.incognito_menu_id:
-                openIncognitoTab();
+                //openIncognitoTab();
+                Toast.makeText(getContext()
+                    , "Private browsing is not supported in WebView."
+                    , Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.close_other_tabs_id:
@@ -1654,6 +1672,16 @@ public class Controller
 
             case R.id.ua_desktop_menu_id:
                 toggleUserAgent();
+                break;
+
+            case R.id.never_sleep_menu_id:
+                if (mSettings.isNeverSleepEnabled()) {
+                    mSettings.setNeverSleepEnabled(false);
+                    ((BrowserActivity)mActivity).releaseWakeLock();
+                } else {
+                    mSettings.setNeverSleepEnabled(true);
+                    ((BrowserActivity)mActivity).acquireWakeLock();
+                }
                 break;
 
             case R.id.window_one_menu_id:

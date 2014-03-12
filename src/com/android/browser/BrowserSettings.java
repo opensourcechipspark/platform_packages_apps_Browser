@@ -51,6 +51,8 @@ import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.WeakHashMap;
+import android.os.SystemProperties;
+import android.text.TextUtils;
 
 /**
  * Class for managing settings
@@ -220,7 +222,14 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
                 mPrefs.edit().remove(PREF_TEXT_SIZE).apply();
             }
 
-            sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base);
+            //sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base);
+			            sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base);
+			 sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base);
+			 if (TextUtils.isEmpty(SystemProperties.get("ro.rk.homepage_base"))){
+			     sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base);
+			   }else{
+				   sFactoryResetUrl =SystemProperties.get("ro.rk.homepage_base");
+			}
             if (sFactoryResetUrl.indexOf("{CID}") != -1) {
                 sFactoryResetUrl = sFactoryResetUrl.replace("{CID}",
                     BrowserProvider.getClientId(mContext.getContentResolver()));
@@ -915,5 +924,16 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
         mPrefs.edit()
             .putBoolean(KEY_LAST_RUN_PAUSED, isPaused)
             .apply();
+    }
+
+    public boolean isNeverSleepEnabled() {
+        requireInitialization();
+        return mPrefs.getBoolean(PREF_NEVER_SLEEP_WHEN_BROWSING, false);
+    }
+
+    public void setNeverSleepEnabled(boolean value) {
+        Editor edit = mPrefs.edit();
+        edit.putBoolean(PREF_NEVER_SLEEP_WHEN_BROWSING, value);
+        edit.apply();
     }
 }

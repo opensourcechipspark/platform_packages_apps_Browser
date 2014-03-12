@@ -20,6 +20,7 @@ public interface PreferenceKeys {
 
     static final String PREF_AUTOFILL_ACTIVE_PROFILE_ID = "autofill_active_profile_id";
     static final String PREF_DEBUG_MENU = "debug_menu";
+    static final String PREF_NEVER_SLEEP_WHEN_BROWSING = "never_sleep_when_browsing";
 
     // ----------------------
     // Keys for accessibility_preferences.xml
