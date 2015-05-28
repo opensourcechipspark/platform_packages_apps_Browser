@@ -44,7 +44,7 @@
     <ListPreference
             android:key="plugin_state"
             android:title="@string/pref_content_plugins"
-            android:defaultValue="ON"
+            android:defaultValue="OFF"
             android:entries="@array/pref_content_plugins_choices"
             android:entryValues="@array/pref_content_plugins_values"
             android:dialogTitle="@string/pref_content_plugins" />
@@ -80,7 +80,13 @@
                 android:key="block_popup_windows"
                 android:defaultValue="true"
                 android:title="@string/pref_content_block_popups" />
-
+		
+	<CheckBoxPreference
+                android:key="popup_video"
+                android:defaultValue="false"
+                android:title="@string/pref_popup_video" 
+                android:summary="@string/pre_popup_video_summary"/>
+		
         <ListPreference
                 android:key="default_text_encoding"
                 android:title="@string/pref_default_text_encoding"

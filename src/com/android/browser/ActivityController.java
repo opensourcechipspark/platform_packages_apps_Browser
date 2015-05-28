@@ -71,4 +71,7 @@ public interface ActivityController {
 
     boolean dispatchGenericMotionEvent(MotionEvent ev);
 
+	void setShouldPlayVideoInWindow(boolean enable);
+	boolean shouldPlayVideoInWindow();
+
 }

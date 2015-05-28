@@ -49,6 +49,7 @@ public interface PreferenceKeys {
     static final String PREF_WEBSITE_SETTINGS = "website_settings";
     static final String PREF_ALLOW_APP_TABS = "allow_apptabs";
 
+    static final String PREF_POPUP_VIDEO = "popup_video";
     // ----------------------
     // Keys for debug_preferences.xml
     // ----------------------

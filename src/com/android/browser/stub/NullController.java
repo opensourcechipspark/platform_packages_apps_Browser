@@ -149,4 +149,14 @@ public class NullController implements ActivityController {
         return false;
     }
 
+	@Override
+	public void setShouldPlayVideoInWindow(boolean enable) {
+	   
+	}
+
+	@Override
+	public boolean shouldPlayVideoInWindow() {
+	   return false;
+	}
+
 }

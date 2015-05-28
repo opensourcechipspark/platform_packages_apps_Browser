@@ -54,6 +54,7 @@ import java.util.WeakHashMap;
 import android.os.SystemProperties;
 import android.text.TextUtils;
 
+
 /**
  * Class for managing settings
  */
@@ -80,6 +81,14 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
     private static final String HONEYCOMB_USERAGENT = "Mozilla/5.0 (Linux; U; " +
         "Android 3.1; en-us; Xoom Build/HMJ25) AppleWebKit/534.13 " +
         "(KHTML, like Gecko) Version/4.0 Safari/534.13";
+
+    private static final String NEXUS7_USERAGENT = "Mozilla/5.0 (Linux; U; " + 
+	    "Android 4.2.2; en-us; rk30sdk Build/JDQ39) AppleWebKit/534.30 (KHTML, like Gecko)" + 
+	    " Version/4.0 Safari/534.40";
+
+	private static final String IPAD_CHROME_USERAGENT = "Mozilla/5.0 (iPad; U; " + 
+		"CPU iPad OS 7_1 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko)" + 
+		" CriOS/33.0.1750.21 Mobile/11D169 Safari/9537.53";
 
     private static final String USER_AGENTS[] = { null,
             DESKTOP_USERAGENT,
@@ -257,6 +266,7 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
      * Syncs all the settings that have a Preference UI
      */
     private void syncSetting(WebSettings settings) {
+    	settings.setPopupVideoEnable(popupVideo());
         settings.setGeolocationEnabled(enableGeolocation());
         settings.setJavaScriptEnabled(enableJavascript());
         settings.setLightTouchEnabled(enableLightTouch());
@@ -299,7 +309,7 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
         // zooming
         settings.setEnableSmoothTransition(true);
         // disable content url access
-        settings.setAllowContentAccess(false);
+        settings.setAllowContentAccess(true);
 
         // HTML5 API flags
         settings.setAppCacheEnabled(true);
@@ -633,7 +643,7 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
 
     // TODO: Cache
     public PluginState getPluginState() {
-        String state = mPrefs.getString(PREF_PLUGIN_STATE, "ON");
+        String state = mPrefs.getString(PREF_PLUGIN_STATE, "OFF");
         return PluginState.valueOf(state);
     }
 
@@ -654,7 +664,11 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
     public boolean blockPopupWindows() {
         return mPrefs.getBoolean(PREF_BLOCK_POPUP_WINDOWS, true);
     }
-
+	
+    public boolean popupVideo(){
+    	return mPrefs.getBoolean(PREF_POPUP_VIDEO, false);
+    }
+	
     public boolean loadImages() {
         return mPrefs.getBoolean(PREF_LOAD_IMAGES, true);
     }

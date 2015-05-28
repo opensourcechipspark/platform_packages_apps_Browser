@@ -143,6 +143,7 @@
     <string name="save_to_bookmarks">Save to bookmarks</string>
     <!-- Title of the dialog to bookmark a page -->
     <string name="bookmark_this_page">Bookmark this page</string>
+    <string name="show_playwindow">Play with embeded window</string>
     <!-- Option on bookmark dialog to remove the bookmark [CHAR LIMIT=30] -->
     <string name="remove">Remove</string>
     <!-- Menu item on the bookmarks page, to edit an existing bookmark -->
@@ -296,6 +297,8 @@
     <string name="pref_content_load_images_summary">Display images on web pages</string>
     <!-- Settings label [CHAR LIMIT=30] -->
     <string name="pref_content_block_popups">Block pop-ups</string>
+    <string name="pref_popup_video">Popup video</string>
+    <string name="pre_popup_video_summary">Play video in independent window</string>
     <!-- Settings label -->
     <string name="pref_content_javascript">Enable JavaScript</string>
     <!-- Settings label -->

@@ -26,6 +26,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Build;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
@@ -124,6 +125,10 @@ public class XLargeUi extends BaseUi {
         if (bm != null) {
             bm.setVisible(false);
         }
+		MenuItem incognito = menu.findItem(R.id.incognito_menu_id);
+        if (incognito != null) {
+            incognito.setVisible(!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT));
+        }
         return true;
     }
 
@@ -217,6 +222,12 @@ public class XLargeUi extends BaseUi {
     protected void updateNavigationState(Tab tab) {
         mNavBar.updateNavigationState(tab);
     }
+
+    @Override
+	public void updatePlayWindowVisible(Tab tab, boolean auto) {
+		// TODO Auto-generated method stub
+		mNavBar.updatePlayWindowVisible(tab, auto);
+	}
 
     @Override
     public void setUrlTitle(Tab tab) {

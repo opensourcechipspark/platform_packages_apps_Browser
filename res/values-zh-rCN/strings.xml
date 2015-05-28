@@ -72,6 +72,7 @@
     <string name="http" msgid="2163722670597250102">"http://"</string>
     <string name="save_to_bookmarks" msgid="1679286010089780932">"保存到书签"</string>
     <string name="bookmark_this_page" msgid="7530739804320811054">"将此页加为书签"</string>
+    <string name="show_playwindow">"小窗口播放"</string>
     <string name="remove" msgid="7820112494467011374">"删除"</string>
     <string name="edit_bookmark" msgid="5024089053490231905">"编辑书签"</string>
     <string name="create_shortcut_bookmark" msgid="1995095662095484289">"向主屏幕添加快捷方式"</string>
@@ -132,6 +133,8 @@
     <string name="pref_content_load_images" msgid="2125616852957377561">"加载图片"</string>
     <string name="pref_content_load_images_summary" msgid="5055874125248398584">"显示网页上的图片"</string>
     <string name="pref_content_block_popups" msgid="4158524847764470895">"阻止弹出式窗口"</string>
+    <string name="pref_popup_video">"弹出视频"</string>
+    <string name="pre_popup_video_summary">"在独立的窗口播放视频"</string>
     <string name="pref_content_javascript" msgid="4570972030299516843">"启用 JavaScript"</string>
     <string name="pref_content_open_in_background" msgid="824123779725118663">"在后方打开"</string>
     <string name="pref_content_plugins" msgid="7231944644794301582">"启用插件"</string>

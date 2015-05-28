@@ -262,4 +262,11 @@ public class NavigationBarPhone extends NavigationBarBase implements
         return mUiController.onOptionsItemSelected(item);
     }
 
+	public void updateNavigationState(Tab tab) {
+		// TODO Auto-generated method stub
+		if(tab != null){
+			updatePlayWindowVisible(tab, false);
+		}
+	}
+
 }

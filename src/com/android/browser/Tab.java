@@ -69,6 +69,7 @@ import com.android.browser.TabControl.OnThumbnailUpdatedListener;
 import com.android.browser.homepages.HomeProvider;
 import com.android.browser.provider.SnapshotProvider.Snapshots;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -93,10 +94,17 @@ class Tab implements PictureListener {
     // filter them and match the logtag used for these messages in older versions
     // of the browser.
     private static final String CONSOLE_LOGTAG = "browser";
-
+    private static final boolean DEBUG = true;
+    public void LOGD(String msg){
+    	if(DEBUG){
+    		Log.d(LOGTAG,msg);
+    	}
+    }
     private static final int MSG_CAPTURE = 42;
     private static final int CAPTURE_DELAY = 100;
     private static final int INITIAL_PROGRESS = 5;
+
+    private static final String RESTRICTED = "<html><body>not allowed</body></html>";
 
     private static Bitmap sDefaultFavicon;
 
@@ -185,7 +193,8 @@ class Tab implements PictureListener {
     private Bitmap mCapture;
     private Handler mHandler;
     private boolean mUpdateThumbnail;
-
+    private String mVideoUrl = null;
+	private int mPlayID = 0;
     /**
      * See {@link #clearBackStackWhenItemAdded(String)}.
      */
@@ -333,6 +342,9 @@ class Tab implements PictureListener {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        	LOGD("onPageStarted");
+        	mVideoUrl = null;
+        	mWebViewController.onUpdatePlayWindowVisible(Tab.this);
             mInPageLoad = true;
             mUpdateThumbnail = true;
             mPageLoadProgress = INITIAL_PROGRESS;
@@ -574,6 +586,24 @@ class Tab implements PictureListener {
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view,
                 String url) {
+            Uri uri = Uri.parse(url);
+            if (uri.getScheme().toLowerCase().equals("file")) {
+                File file = new File(uri.getPath());
+                try {
+                    if (file.getCanonicalPath().startsWith(
+                            mContext.getApplicationContext().getApplicationInfo().dataDir)) {
+                        return new WebResourceResponse("text/html","UTF-8",
+                                new ByteArrayInputStream(RESTRICTED.getBytes("UTF-8")));
+                    }
+                } catch (Exception ex) {
+                    Log.e(LOGTAG, "Bad canonical path" + ex.toString());
+                    try {
+                        return new WebResourceResponse("text/html","UTF-8",
+                                new ByteArrayInputStream(RESTRICTED.getBytes("UTF-8")));
+                    } catch (java.io.UnsupportedEncodingException e) {
+                    }
+                }
+            }
             WebResourceResponse res = HomeProvider.shouldInterceptRequest(
                     mContext, url);
             return res;
@@ -779,7 +809,17 @@ class Tab implements PictureListener {
                 mTouchIconLoader.execute(url);
             }
         }
-
+		
+		@Override
+        public void onReceivedVideoUrl(WebView view, String url, int playID){
+            if (view.getSettings().isPopupVideoEnable()) {
+	        	LOGD("onReceivedVideoUrl url =" + url);
+	        	mVideoUrl = url;
+				mPlayID = playID;
+	        	mWebViewController.onUpdatePlayWindowVisible(Tab.this);
+            }
+        }
+		
         @Override
         public void onShowCustomView(View view,
                 WebChromeClient.CustomViewCallback callback) {
@@ -1158,7 +1198,15 @@ class Tab implements PictureListener {
         mWebViewController = ctl;
         updateShouldCaptureThumbnails();
     }
+	
+    public String getVideoUrl(){
+    	return mVideoUrl;
+    }
 
+	public int getPlayID() {
+		return mPlayID;
+	}
+	
     public long getId() {
         return mId;
     }

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.app.NotificationManager;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -220,6 +221,8 @@ public class Controller
 
     private String mVoiceResult;
 
+	private boolean mShouldPlayVideoInWindow;
+
     public Controller(Activity browser) {
         mActivity = browser;
         mSettings = BrowserSettings.getInstance();
@@ -254,6 +257,7 @@ public class Controller
         mSystemAllowGeolocationOrigins.start();
 
         openIconDatabase();
+		mShouldPlayVideoInWindow = false;
     }
 
     @Override
@@ -1570,10 +1574,7 @@ public class Controller
                 break;
 
             case R.id.incognito_menu_id:
-                //openIncognitoTab();
-                Toast.makeText(getContext()
-                    , "Private browsing is not supported in WebView."
-                    , Toast.LENGTH_SHORT).show();
+                openIncognitoTab();
                 break;
 
             case R.id.close_other_tabs_id:
@@ -2392,6 +2393,10 @@ public class Controller
 
     protected void closeCurrentTab(boolean andQuit) {
         if (mTabControl.getTabCount() == 1) {
+        	//we clear the notification
+        	
+        	NotificationManager mNotificationManager = (NotificationManager)mActivity.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancel(com.android.browser.Browser.NOTIFICATIONID);
             mCrashRecoveryHandler.clearState();
             mTabControl.removeTab(getCurrentTab());
             mActivity.finish();
@@ -2777,4 +2782,21 @@ public class Controller
         return mBlockEvents;
     }
 
+	@Override
+	public void onUpdatePlayWindowVisible(Tab tab) {
+		// TODO Auto-generated method stub
+		
+		mUi.updatePlayWindowVisible(tab, mShouldPlayVideoInWindow);
+		mShouldPlayVideoInWindow = false;
+	}
+
+	@Override
+	public void setShouldPlayVideoInWindow(boolean enable) {
+	   mShouldPlayVideoInWindow = enable;
+	}
+
+	@Override
+	public boolean shouldPlayVideoInWindow() {
+	   return mShouldPlayVideoInWindow;
+	}
 }

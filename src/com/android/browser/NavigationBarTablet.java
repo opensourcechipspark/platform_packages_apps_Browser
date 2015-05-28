@@ -19,6 +19,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -27,6 +31,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -35,7 +40,13 @@ import com.android.browser.UI.ComboViews;
 import com.android.browser.UrlInputView.StateListener;
 
 public class NavigationBarTablet extends NavigationBarBase implements StateListener {
-
+	private static final String TAG = "NavigationBarTablet";
+	private static final boolean DEBUG = true;
+	public void LOGD(String msg){
+		if(DEBUG){
+			Log.d(TAG,msg);
+		}
+	}
     private Drawable mStopDrawable;
     private Drawable mReloadDrawable;
     private String mStopDescription;
@@ -57,6 +68,8 @@ public class NavigationBarTablet extends NavigationBarBase implements StateListe
     private boolean mHideNavButtons;
     private Drawable mFaviconDrawable;
 
+    private Context mContext;
+
     public NavigationBarTablet(Context context) {
         super(context);
         init(context);
@@ -73,6 +86,8 @@ public class NavigationBarTablet extends NavigationBarBase implements StateListe
     }
 
     private void init(Context context) {
+    	mContext = context;
+       
         Resources resources = context.getResources();
         mStopDrawable = resources.getDrawable(R.drawable.ic_stop_holo_dark);
         mReloadDrawable = resources.getDrawable(R.drawable.ic_refresh_holo_dark);
@@ -89,6 +104,7 @@ public class NavigationBarTablet extends NavigationBarBase implements StateListe
     protected void onFinishInflate() {
         super.onFinishInflate();
         mAllButton = findViewById(R.id.all_btn);
+        mPlayWindow.setVisibility(View.GONE);
         // TODO: Change enabled states based on whether you can go
         // back/forward.  Probably should be done inside onPageStarted.
         mNavButtons = findViewById(R.id.navbuttons);
@@ -109,6 +125,9 @@ public class NavigationBarTablet extends NavigationBarBase implements StateListe
         mSearchButton.setOnClickListener(this);
         mClearButton.setOnClickListener(this);
         mVoiceButton.setOnClickListener(this);
+        //$_rbox_$_modify_$_by cx
+        mUrlInput.setOnClickListener(this);
+        //$_rbox_$_modify_$_end
         mUrlInput.setContainer(mUrlContainer);
         mUrlInput.setStateListener(this);
     }
@@ -139,12 +158,14 @@ public class NavigationBarTablet extends NavigationBarBase implements StateListe
 
     void updateNavigationState(Tab tab) {
         if (tab != null) {
+        	LOGD("updateNavigationState");
             mBackButton.setImageResource(tab.canGoBack()
                     ? R.drawable.ic_back_holo_dark
                     : R.drawable.ic_back_disabled_holo_dark);
             mForwardButton.setImageResource(tab.canGoForward()
                     ? R.drawable.ic_forward_holo_dark
                     : R.drawable.ic_forward_disabled_holo_dark);
+            updatePlayWindowVisible(tab, false);
         }
         updateUrlIcon();
     }
@@ -181,6 +202,10 @@ public class NavigationBarTablet extends NavigationBarBase implements StateListe
             clearOrClose();
         } else if (mVoiceButton == v) {
             mUiController.startVoiceRecognizer();
+        //$_rbox_$_modify_$_by cx
+        } else if (mUrlInput == v) {
+            mBaseUi.editUrl(false, true);
+        //$_rbox_$_modify_$_end
         } else {
             super.onClick(v);
         }

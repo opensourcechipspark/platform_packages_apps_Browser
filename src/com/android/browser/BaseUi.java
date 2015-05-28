@@ -659,6 +659,13 @@ public abstract class BaseUi implements UI {
     @Override
     public void updateMenuState(Tab tab, Menu menu) {
     }
+    
+    
+    @Override
+	public void updatePlayWindowVisible(Tab tab, boolean auto) {
+		// TODO Auto-generated method stub
+		
+	}
 
     @Override
     public void onOptionsMenuOpened() {

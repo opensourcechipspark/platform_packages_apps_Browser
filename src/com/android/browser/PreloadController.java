@@ -265,4 +265,9 @@ public class PreloadController implements WebViewController {
         return false;
     }
 
+	@Override
+	public void onUpdatePlayWindowVisible(Tab tab) {
+		// TODO Auto-generated method stub
+		
+	}
 }

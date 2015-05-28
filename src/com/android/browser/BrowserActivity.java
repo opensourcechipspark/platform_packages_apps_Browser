@@ -18,8 +18,11 @@ package com.android.browser;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -34,6 +37,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+
 import com.android.browser.stub.NullController;
 import com.google.common.annotations.VisibleForTesting;
 
@@ -44,12 +51,45 @@ public class BrowserActivity extends Activity {
     public static final String ACTION_RESTART = "--restart--";
     private static final String EXTRA_STATE = "state";
     public static final String EXTRA_DISABLE_URL_OVERRIDE = "disable_url_override";
-
+    private static final boolean DEBUG = true;
+    private static final String TAG = "BrowserActivity";
+	private static final String PAUSE_VIDEO = "com.android.browser.PAUSE_TAB";
+	private static final String RESUME_VIDEO = "com.android.browser.PLAY_ID";
+    public void LOGD(String msg){
+    	if(DEBUG){
+    		Log.d(TAG,msg);
+    	}
+    }
     private final static String LOGTAG = "browser";
 
     private final static boolean LOGV_ENABLED = Browser.LOGV_ENABLED;
 
     private ActivityController mController = NullController.INSTANCE;
+    private IntentFilter mIntentFilter = null;
+    private MyBroadcastReceiver mReceiver = null;
+    private class MyBroadcastReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			Log.d(TAG, "onReceive: " + intent);
+			if (intent.getAction().equals(PAUSE_VIDEO)) {
+				Timer timer=new Timer();
+				timer.schedule(new TimerTask(){   
+					public void run(){   
+					Controller control = (Controller)mController;			
+					control.getCurrentTab().getWebView().pauseVideo();
+					this.cancel();}
+				}, 1000);
+			}
+			else if(intent.getAction().equals(RESUME_VIDEO)){
+				Controller control = (Controller)mController;
+				mController.setShouldPlayVideoInWindow(true);
+			    control.getCurrentTab().getWebView().notifyEndVideo(intent.getIntExtra("BROWSERPLAYID", 0));
+			}
+		}
+    	
+    }
 
     private PowerManager.WakeLock mWakeLock = null;
 
@@ -76,6 +116,10 @@ public class BrowserActivity extends Activity {
 
         Intent intent = (icicle == null) ? getIntent() : null;
         mController.start(intent);
+	    mReceiver = new MyBroadcastReceiver();
+	    mIntentFilter = new IntentFilter();
+		mIntentFilter.addAction(PAUSE_VIDEO);
+		mIntentFilter.addAction(RESUME_VIDEO);
     }
 
     public static boolean isTablet(Context context) {
@@ -138,6 +182,7 @@ public class BrowserActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mReceiver, mIntentFilter);
         if (LOGV_ENABLED) {
             Log.v(LOGTAG, "BrowserActivity.onResume: this=" + this);
         }
@@ -178,6 +223,7 @@ public class BrowserActivity extends Activity {
 
     @Override
     protected void onPause() {
+    	unregisterReceiver(mReceiver);
         mController.onPause();
         super.onPause();
     }

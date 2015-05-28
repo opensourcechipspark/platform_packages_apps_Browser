@@ -96,7 +96,9 @@ public interface UI {
     public boolean onPrepareOptionsMenu(Menu menu);
 
     public void updateMenuState(Tab tab, Menu menu);
-
+    
+    public void updatePlayWindowVisible(Tab tab, boolean auto);
+    
     public void onOptionsMenuOpened();
 
     public void onExtendedMenuOpened();
